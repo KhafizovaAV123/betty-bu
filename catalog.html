@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Каталог — БетонМикс</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">БЕТОН<span>МИКС</span></a>
+    <button class="menu-toggle" aria-label="Меню">☰</button>
+    <nav class="dropdown-menu">
+      <a href="catalog.html">Каталог</a>
+      <a href="calculator.html">Калькулятор</a>
+      <a href="bag.html">Заявка <b class="cart-count">0</b></a>
+      <a href="about.html">О заводе</a>
+    </nav>
+  </div>
+</header>
+
+<section class="section-heading page-top"><h2>Каталог</h2></section>
+<div class="container">
+  <div class="filters">
+    <button class="filter active" data-filter="all">Всё</button>
+    <button class="filter" data-filter="beton">Бетон</button>
+    <button class="filter" data-filter="rastvor">Растворы</button>
+    <button class="filter" data-filter="blocks">Блоки</button>
+  </div>
+  <div class="catalog" id="catalog"></div>
+</div>
+<footer class="footer">
+  <div class="container footer__inner">
+    <div><b>БетонМикс</b><br>г. Казань, ул. Заводская, 12</div>
+    <div>+7 (843) 000-00-00<br>info@betonmix.example</div>
+    <div>Ежедневно 07:00–22:00<br>Доставка миксерами 7–10 м³</div>
+  </div>
+</footer>
+</body>
+</html>

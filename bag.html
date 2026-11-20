@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявка — БетонМикс</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+<header class="header">
+  <div class="container header__inner">
+    <a href="index.html" class="logo">БЕТОН<span>МИКС</span></a>
+    <button class="menu-toggle" aria-label="Меню">☰</button>
+    <nav class="dropdown-menu">
+      <a href="catalog.html">Каталог</a>
+      <a href="calculator.html">Калькулятор</a>
+      <a href="bag.html">Заявка <b class="cart-count">0</b></a>
+      <a href="about.html">О заводе</a>
+    </nav>
+  </div>
+</header>
+
+<section class="section-heading page-top"><h2>Ваша заявка</h2></section>
+<div class="container narrow">
+  <div id="bag"></div>
+  <form class="panel" id="order" novalidate>
+    <label>Имя <input type="text" id="name" placeholder="Иван"></label>
+    <label>Телефон <input type="tel" id="phone" placeholder="+7 900 000-00-00"></label>
+    <label>Адрес доставки <input type="text" id="addr" placeholder="Город, улица, дом"></label>
+    <p class="error" id="error"></p>
+    <button class="btn" type="submit">Отправить заявку</button>
+  </form>
+</div>
+<footer class="footer">
+  <div class="container footer__inner">
+    <div><b>БетонМикс</b><br>г. Казань, ул. Заводская, 12</div>
+    <div>+7 (843) 000-00-00<br>info@betonmix.example</div>
+    <div>Ежедневно 07:00–22:00<br>Доставка миксерами 7–10 м³</div>
+  </div>
+</footer>
+</body>
+</html>
