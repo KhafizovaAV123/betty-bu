@@ -3,35 +3,43 @@ document.addEventListener('DOMContentLoaded', () => {
   const header = document.querySelector('.header');
   const menuToggle = document.querySelector('.menu-toggle');
   const dropdownMenu = document.querySelector('.dropdown-menu');
-  const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 50);
-  window.addEventListener('scroll', onScroll); onScroll();
+  
+  if (header) {
+    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 50);
+    window.addEventListener('scroll', onScroll); 
+    onScroll();
+  }
+
   if (menuToggle && dropdownMenu) {
-    menuToggle.addEventListener('click', () => {
-      dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+    menuToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      dropdownMenu.classList.toggle('active');
       menuToggle.classList.toggle('rotated');
     });
   }
 
-  /* ---------- Данные ---------- */
+  /* ---------- Данные о товарах ---------- */
   const PRODUCTS = [
-    { id: 1, cat: 'beton',   name: 'Бетон М200 (B15)', desc: 'Подготовка под фундамент, дорожки', price: 4600 },
-    { id: 2, cat: 'beton',   name: 'Бетон М300 (B22.5)', desc: 'Фундаменты, стяжки, монолитные стены', price: 4950 },
-    { id: 3, cat: 'beton',   name: 'Бетон М350 (B25)', desc: 'Плиты перекрытия, ответственные конструкции', price: 5300 },
-    { id: 4, cat: 'beton',   name: 'Бетон М400 (B30)', desc: 'Колонны, мосты, дорожные плиты', price: 5700 },
-    { id: 5, cat: 'rastvor', name: 'Раствор кладочный М100', desc: 'Кирпичная и блочная кладка', price: 3900 },
-    { id: 6, cat: 'rastvor', name: 'Раствор штукатурный М150', desc: 'Выравнивание стен', price: 4200 },
-    { id: 7, cat: 'blocks',  name: 'Блок ФБС 24.4.6', desc: '2380×400×580 мм, 1,6 т', price: 4800, unit: 'шт' },
-    { id: 8, cat: 'blocks',  name: 'Бордюр БР 100.30.15', desc: '1000×300×150 мм', price: 650, unit: 'шт' }
+    { id: 1, cat: 'dogs',   name: 'Корм для собак Adult', desc: 'Сухой корм с говядиной, 15 кг', price: 3200 },
+    { id: 2, cat: 'dogs',   name: 'Игрушка-канат', desc: 'Для активных игр, 40 см', price: 450 },
+    { id: 3, cat: 'cats',   name: 'Корм для кошек Sterilized', desc: 'Сухой корм с индейкой, 10 кг', price: 4100 },
+    { id: 4, cat: 'cats',   name: 'Наполнитель комкующийся', desc: 'Бентонит, 10 л', price: 550 },
+    { id: 5, cat: 'birds',  name: 'Зерновая смесь для попугаев', desc: 'Основа рациона, 1 кг', price: 280 },
+    { id: 6, cat: 'birds',  name: 'Клетка для птиц', desc: 'С жердочками и кормушками', price: 2500, unit: 'шт' },
+    { id: 7, cat: 'fish',   name: 'Корм для аквариумных рыб', desc: 'Хлопья, 100 г', price: 350 },
+    { id: 8, cat: 'fish',   name: 'Фильтр для аквариума', desc: 'Внутренний, до 100 л', price: 1800, unit: 'шт' }
   ];
   const fmt = n => n.toLocaleString('ru-RU') + ' ₽';
 
   /* ---------- Корзина (localStorage) ---------- */
   const load = () => { try { return JSON.parse(localStorage.getItem('bag')) || []; } catch { return []; } };
   const save = bag => { localStorage.setItem('bag', JSON.stringify(bag)); updateCount(); };
+  
   function updateCount() {
     const n = load().reduce((s, i) => s + i.qty, 0);
     document.querySelectorAll('.cart-count').forEach(el => el.textContent = n);
   }
+  
   function addToBag(id, qty = 1) {
     const bag = load(); const found = bag.find(i => i.id === id);
     if (found) found.qty += qty; else bag.push({ id, qty });
@@ -46,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
       catalog.innerHTML = PRODUCTS.filter(p => filter === 'all' || p.cat === filter).map(p => `
         <div class="item">
           <h3>${p.name}</h3><small>${p.desc}</small>
-          <div class="price">${fmt(p.price)} <small>/ ${p.unit || 'м³'}</small></div>
+          <div class="price">${fmt(p.price)} <small>/ ${p.unit || 'шт'}</small></div>
           <button class="btn" data-id="${p.id}">В заявку</button>
         </div>`).join('');
     };
@@ -55,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.filter').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
       render(f);
     };
-    apply(['beton', 'rastvor', 'blocks'].includes(start) ? start : 'all');
+    apply(['dogs', 'cats', 'birds', 'fish'].includes(start) ? start : 'all');
     document.querySelectorAll('.filter').forEach(b => b.addEventListener('click', () => apply(b.dataset.filter)));
     catalog.addEventListener('click', e => {
       const btn = e.target.closest('button[data-id]'); if (!btn) return;
@@ -65,21 +73,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ---------- Калькулятор ---------- */
+  /* ---------- Калькулятор корма ---------- */
   const calc = document.getElementById('calc');
   if (calc) {
     calc.addEventListener('click', () => {
-      const l = +document.getElementById('len').value, w = +document.getElementById('wid').value, h = +document.getElementById('hei').value;
-      const grade = +document.getElementById('type').value; // 1 — М200, 2 — М300, 3 — М350
+      const weight = +document.getElementById('len').value;
+      const petType = +document.getElementById('type').value;
       const out = document.getElementById('result');
       out.hidden = false;
-      if (!(l > 0 && w > 0 && h > 0)) { out.textContent = 'Введите размеры больше нуля.'; return; }
-      const vol = Math.ceil(l * w * h * 1.05 * 10) / 10; // запас 5%
-      const prod = PRODUCTS[grade === 1 ? 0 : grade === 2 ? 1 : 2];
-      out.innerHTML = `Нужно <b>${vol} м³</b> (с запасом 5%).<br>Рекомендуем: ${prod.name}.<br>Стоимость: <b>${fmt(Math.round(vol * prod.price))}</b>
+      if (!(weight > 0)) { out.textContent = 'Введите вес больше нуля.'; return; }
+      
+      let dailyNorm = 0;
+      let prod = null;
+      if (petType === 1) { dailyNorm = weight * 20; prod = PRODUCTS[0]; } 
+      else if (petType === 2) { dailyNorm = weight * 15; prod = PRODUCTS[2]; } 
+      else if (petType === 3) { dailyNorm = 20; prod = PRODUCTS[4]; } 
+      else { dailyNorm = 5; prod = PRODUCTS[6]; } 
+
+      out.innerHTML = `Суточная норма: <b>${dailyNorm} г</b>.<br>Рекомендуем: ${prod.name}.<br>Стоимость: <b>${fmt(prod.price)}</b>
         <br><button class="btn" id="addCalc">Добавить в заявку</button>`;
       document.getElementById('addCalc').addEventListener('click', e => {
-        addToBag(prod.id, vol); e.target.textContent = 'Добавлено';
+        addToBag(prod.id, 1); e.target.textContent = 'Добавлено';
       });
     });
   }
@@ -89,12 +103,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (bagBox) {
     const draw = () => {
       const bag = load();
-      if (!bag.length) { bagBox.innerHTML = '<p class="empty">Заявка пуста. Выберите продукцию в каталоге.</p>'; return; }
+      if (!bag.length) { bagBox.innerHTML = '<p class="empty">Заявка пуста. Выберите товары в каталоге.</p>'; return; }
       let total = 0;
       bagBox.innerHTML = bag.map(i => {
         const p = PRODUCTS.find(x => x.id === i.id); total += p.price * i.qty;
         return `<div class="bag-row"><span>${p.name}</span>
-          <input type="number" min="0.1" step="0.1" value="${i.qty}" data-id="${i.id}"> ${p.unit || 'м³'}
+          <input type="number" min="1" step="1" value="${i.qty}" data-id="${i.id}"> ${p.unit || 'шт'}
           <b>${fmt(Math.round(p.price * i.qty))}</b><button data-del="${i.id}" aria-label="Удалить">✕</button></div>`;
       }).join('') + `<div class="total">Итого: ${fmt(Math.round(total))}</div>`;
     };
@@ -102,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     bagBox.addEventListener('change', e => {
       if (!e.target.dataset.id) return;
       const bag = load(), it = bag.find(i => i.id === +e.target.dataset.id);
-      it.qty = Math.max(0.1, +e.target.value || 1); save(bag); draw();
+      it.qty = Math.max(1, +e.target.value || 1); save(bag); draw();
     });
     bagBox.addEventListener('click', e => {
       if (!e.target.dataset.del) return;
@@ -114,10 +128,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = document.getElementById('name').value.trim();
       const phone = document.getElementById('phone').value.replace(/\D/g, '');
       const addr = document.getElementById('addr').value.trim();
-      if (!load().length) { err.textContent = 'Добавьте в заявку хотя бы одну позицию.'; return; }
+      if (!load().length) { err.textContent = 'Добавьте в заявку хотя бы один товар.'; return; }
       if (!name || phone.length < 10 || !addr) { err.textContent = 'Заполните имя, телефон (от 10 цифр) и адрес доставки.'; return; }
       err.textContent = ''; save([]); draw(); e.target.reset();
-      alert('Заявка отправлена. Диспетчер перезвонит в течение 15 минут.');
+      alert('Заявка отправлена. Мы доставим заказ в течение 3 часов!');
     });
   }
 });
